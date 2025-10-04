@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow Diagram AI Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-stream {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+        }
+
+        .btn-stream:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(5, 150, 105, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .status.loading {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #34d399;
+        }
+
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #f87171;
+        }
+
+        .response-section {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .response-section h3 {
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .response-content {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .suggestions {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .suggestions h4 {
+            color: #0c4a6e;
+            margin-bottom: 15px;
+        }
+
+        .suggestion-item {
+            background: white;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e0f2fe;
+        }
+
+        .suggestion-item:hover {
+            background: #0ea5e9;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .stream-updates {
+            background: #f0fdf4;
+            border: 1px solid #22c55e;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 13px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Flow Diagram AI Demo</h1>
+            <p>Test the AI-powered flow diagram generation API</p>
+        </div>
+
+        <div class="content">
+            <!-- Suggestions Section -->
+            <div class="suggestions">
+                <h4>💡 Try these example prompts:</h4>
+                <div id="suggestions-list">
+                    <div class="suggestion-item" onclick="usePrompt('Create a user registration process flow')">
+                        Create a user registration process flow
+                    </div>
+                    <div class="suggestion-item" onclick="usePrompt('Design an e-commerce checkout workflow')">
+                        Design an e-commerce checkout workflow
+                    </div>
+                    <div class="suggestion-item" onclick="usePrompt('Build a customer support ticket system flow')">
+                        Build a customer support ticket system flow
+                    </div>
+                    <div class="suggestion-item" onclick="usePrompt('Map out a software development lifecycle')">
+                        Map out a software development lifecycle
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="prompt">Enter your flow diagram description:</label>
+                    <textarea id="prompt" placeholder="Describe the process you want to create a flow diagram for... 
+Example: 'Create a user login system with password reset functionality'"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="generateDiagram()" id="generateBtn">
+                        🚀 Generate Diagram
+                    </button>
+                    <button class="btn-stream" onclick="generateDiagramStream()" id="streamBtn">
+                        ⚡ Generate with Streaming
+                    </button>
+                    <button class="btn-secondary" onclick="clearResults()">
+                        🗑️ Clear Results
+                    </button>
+                </div>
+            </div>
+
+            <!-- Status Section -->
+            <div id="status" class="hidden"></div>
+
+            <!-- Stream Updates -->
+            <div id="streamUpdates" class="stream-updates hidden">
+                <strong>🔄 Live Stream Updates:</strong>
+                <div id="streamContent"></div>
+            </div>
+
+            <!-- Response Section -->
+            <div class="response-section">
+                <h3>📊 API Response</h3>
+                <div id="response" class="response-content">
+                    No response yet. Enter a prompt and click "Generate Diagram" to see the AI response.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+
+        function usePrompt(prompt) {
+            document.getElementById('prompt').value = prompt;
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+            status.classList.remove('hidden');
+        }
+
+        function hideStatus() {
+            document.getElementById('status').classList.add('hidden');
+        }
+
+        function setLoading(isLoading) {
+            const generateBtn = document.getElementById('generateBtn');
+            const streamBtn = document.getElementById('streamBtn');
+
+            generateBtn.disabled = isLoading;
+            streamBtn.disabled = isLoading;
+
+            if (isLoading) {
+                generateBtn.textContent = '⏳ Generating...';
+                streamBtn.textContent = '⏳ Streaming...';
+            } else {
+                generateBtn.textContent = '🚀 Generate Diagram';
+                streamBtn.textContent = '⚡ Generate with Streaming';
+            }
+        }
+
+        async function generateDiagram() {
+            const prompt = document.getElementById('prompt').value.trim();
+
+            if (!prompt) {
+                showStatus('Please enter a prompt first!', 'error');
+                return;
+            }
+
+            setLoading(true);
+            showStatus('Sending request to AI...', 'loading');
+
+            try {
+                const response = await fetch(`${API_BASE}/ai-flow/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showStatus('✅ Diagram generated successfully!', 'success');
+                    document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+                } else {
+                    showStatus(`❌ Error: ${data.error}`, 'error');
+                    document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+                }
+
+            } catch (error) {
+                showStatus(`❌ Network Error: ${error.message}`, 'error');
+                document.getElementById('response').textContent = `Error: ${error.message}`;
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function generateDiagramStream() {
+            const prompt = document.getElementById('prompt').value.trim();
+
+            if (!prompt) {
+                showStatus('Please enter a prompt first!', 'error');
+                return;
+            }
+
+            setLoading(true);
+            showStatus('Starting stream generation...', 'loading');
+
+            const streamUpdates = document.getElementById('streamUpdates');
+            const streamContent = document.getElementById('streamContent');
+            streamUpdates.classList.remove('hidden');
+            streamContent.innerHTML = '';
+
+            // Create EventSource for streaming
+            const eventSource = new EventSource(`${API_BASE}/ai-flow/generate-stream`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ prompt })
+            });
+
+            // Note: EventSource doesn't support POST directly, so we'll use fetch with streaming
+            fetch(`${API_BASE}/ai-flow/generate-stream`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ prompt })
+            })
+                .then(response => {
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+
+                    function readStream() {
+                        return reader.read().then(({ done, value }) => {
+                            if (done) {
+                                setLoading(false);
+                                showStatus('✅ Stream completed!', 'success');
+                                return;
+                            }
+
+                            const chunk = decoder.decode(value);
+                            const lines = chunk.split('\n');
+
+                            lines.forEach(line => {
+                                if (line.startsWith('data: ')) {
+                                    try {
+                                        const data = JSON.parse(line.slice(6));
+                                        handleStreamData(data);
+                                    } catch (e) {
+                                        console.log('Parse error:', e);
+                                    }
+                                }
+                            });
+
+                            return readStream();
+                        });
+                    }
+
+                    return readStream();
+                })
+                .catch(error => {
+                    setLoading(false);
+                    showStatus(`❌ Stream Error: ${error.message}`, 'error');
+                    streamContent.innerHTML += `\n❌ Error: ${error.message}`;
+                });
+        }
+
+        function handleStreamData(data) {
+            const streamContent = document.getElementById('streamContent');
+            const timestamp = new Date().toLocaleTimeString();
+
+            switch (data.type) {
+                case 'progress':
+                    streamContent.innerHTML += `\n[${timestamp}] 🔄 ${data.message}`;
+                    showStatus(data.message, 'loading');
+                    break;
+
+                case 'partial':
+                    streamContent.innerHTML += `\n[${timestamp}] 📝 Partial data received`;
+                    document.getElementById('response').textContent = JSON.stringify(data.data, null, 2);
+                    break;
+
+                case 'complete':
+                    streamContent.innerHTML += `\n[${timestamp}] ✅ Generation complete!`;
+                    document.getElementById('response').textContent = JSON.stringify(data.diagram, null, 2);
+                    showStatus('✅ Diagram generated successfully!', 'success');
+                    break;
+
+                case 'error':
+                    streamContent.innerHTML += `\n[${timestamp}] ❌ Error: ${data.error}`;
+                    showStatus(`❌ Error: ${data.error}`, 'error');
+                    break;
+            }
+
+            // Auto-scroll to bottom
+            streamContent.scrollTop = streamContent.scrollHeight;
+        }
+
+        function clearResults() {
+            document.getElementById('response').textContent = 'No response yet. Enter a prompt and click "Generate Diagram" to see the AI response.';
+            document.getElementById('streamUpdates').classList.add('hidden');
+            document.getElementById('streamContent').innerHTML = '';
+            hideStatus();
+        }
+
+        // Test server connection on page load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    showStatus('🟢 Backend server is running!', 'success');
+                    setTimeout(hideStatus, 3000);
+                } else {
+                    showStatus('🔴 Backend server error', 'error');
+                }
+            } catch (error) {
+                showStatus('🔴 Cannot connect to backend server. Make sure it\'s running on port 3001.', 'error');
+            }
+        });
+    </script>
+</body>
+
+</html>
